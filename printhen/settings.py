@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'printhen',
     'redisboard',
+    'gunicorn',
 )
 
 MIDDLEWARE_CLASSES = (
