@@ -12,6 +12,7 @@ import urllib
 from django.core.cache import cache
 import os
 import math
+import gmail
 
 from celery import shared_task
 
@@ -42,16 +43,21 @@ hostname = "192.168.0.102"
 
 warnings = ['media-empty-warning','media-jam-warning','door-open-report','toner-empty-warning']
 
-# @periodic_task(run_every=datetime.timedelta(seconds=2))
-# def add(x,y):err
-# 	return x+y
+@shared_task
+@periodic_task(run_every=datetime.timedelta(seconds=2))
+def hello():
+    print "HELLO"
+
 # @periodic_task(run_every=datetime.timedelta(minutes=55))
 # def hello():
 # 	i = 0
 # 	print "hello"
 # 	hello()
 	
-
+@shared_task
+def login():
+    g = gmail.login('printhen','parvathi12#')
+    print g.inbox.mail()
 
 # @celery.task
 # def add():
