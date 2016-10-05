@@ -1,0 +1,17 @@
+<html>
+<head>
+<title>Printhen Admin</title>
+{% load static %}
+<link rel="stylesheet" href="{% static "printhen/css/style.css" %}"/>
+</head>
+
+<body>
+<div class = "content">
+<img class="logo" src="{% static "printhen/logo.png" %}" alt="Logo"/>
+<form action="admin" method="post">
+{% csrf_token %}
+    {{ form }}
+<input type="submit" value="Save">
+</form>
+</div>
+</body>

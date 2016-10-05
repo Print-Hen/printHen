@@ -15,8 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.views.generic import TemplateView
 import views
 urlpatterns = [
     url(r'^$',views.index,name='index'),
-    url(r'^oauth2callback',views.oauth2callback,name='oauth2callback'),
+    url(r'^admin/',views.admin,name='admin'),
+     url(r'^credentialserror', TemplateView.as_view(template_name='printhen/credentialserror.html')),
 ]

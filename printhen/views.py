@@ -1,47 +1,116 @@
 
-from django.http import HttpResponse
 import json
-import betterimap
-import requests
-import httplib2
-
-from apiclient import discovery
-from oauth2client import client
-from django.shortcuts import redirect
-
-
+import easyimap
+import cups
+import itertools
+import smtplib
+from email.mime.text import MIMEText
+from .forms import AdminForm
+from pprint import pprint
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from django.http import HttpResponse
 def index(request):
-    if 'credentials' not in request.session:
-        return redirect('oauth2callback')
-    credentials = client.OAuth2Credentials.from_json(request.session['credentials'])
-    if credentials.access_token_expired:
-        return redirect('oauth2callback')
-    else:
-        http_auth = credentials.authorize(httplib2.Http())
-        gmail_service = discovery.build('gmail', 'v1', http_auth)
-        results = gmail_service.users().labels().list(userId='me').execute()
-        labels = results.get('labels',[])
-        if not labels:
-            print('No labels found.')
+    try:
+        with open('credentials.json') as data_file:
+            data = json.load(data_file)
+        pprint(data)
+    except:
+        return HttpResponseRedirect("credentialserror")
+    host = data["imap_hostname"]
+    user = data["username"]
+    password = data["password"]
+    mailbox = "inbox"
+    imapper = easyimap.connect(host, user, password, mailbox)
+    mail1 = imapper.unseen(1)
+    for mail in mail1:
+        title = mail.title.encode("utf-8")
+        body = mail.body.encode("utf-8")
+        from_addr = mail.from_addr.encode("utf-8")
+
+        print "Checking for title =>" + title
+        title = title.upper()
+        if "PRINTHEN" in title:
+            print "MAGIC TITLE PASSED"
+            #printhen_response(data["username"], from_addr, "MAGIC TITILE PASSED")
         else:
-            print('Labels:')
-            for label in labels:
-                print(label['name'])
+            print "MAGIC TITLE FAILED"
+            printhen_response(data["username"], from_addr, "[no-reply]PRINTHEN-INVALID SUBJECT", "Hey buddy kindly send mail with PRINTHEN as subject in order to initiate the print")
+        from_addr = from_addr[from_addr.find("<")+1:from_addr.find(">")]
+        print "====================="
+        print "NEW MAIL "
+        print "====================="
+        print "from    : " + from_addr
+        print "Message : " + body
+        if "begin print" not in body or "end print" not in body or "from" not in body or "to" not in body or "copies" not in body:
+            printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN. SYNTAX ERROR", "Syntax error. The correct syntax is: begin print from x to y copies z end print")
+        else:
+            body = body[body.find("begin print")+11:body.find("end print")]
+            op = parseBody(body)
+            conn = cups.Connection()
+            print body
+            print op
+            if not mail.attachments:
+                printhen_response(data["username"], from_addr, "[no-reply]PRINTHEN-NO ATTACHMENT FOUND", "Hey Buddy, I guess you forgot to attach a document for printing")
+            if int(op['from']) > int(op['to']):
+                printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-START PAGE GREATER THAN END PAGE", "hey buddy it seems like the from value is greater that to value kindly check it")
+            for attachment in mail.attachments:
+                filename = settings.MEDIA_PATH + attachment[0]
+                with open(filename, 'wb') as f:
+                    f.write(attachment[1])
+                #conn = cups.Connection()
+                options = {}
+                options['copies'] = op['copies']
+                s = []
+                s.append(op['from'])
+                s.append("-")
+                s.append(op['to'])
+                s1 = ''.join(s)
+                options['page-ranges'] = s1
+                print options
+                printers = conn.getPrinters()
+                for printer in printers:
+                    print printers.items()
+                    print printer, printers[printer]["device-uri"]
+                    conn.printFile(printers[printer]["printer-info"], filename, "print", options)
+    return HttpResponse("Hello")
 
 
-def oauth2callback(request):
-    flow = client.flow_from_clientsecrets(
-        'client_secrets.json',
-        scope='https://www.googleapis.com/auth/gmail.readonly',
-        redirect_uri='http://192.168.43.69.xip.io:8000/')
-    print request.POST.get('code','HELLO');
-    if request.POST.get('code',None) is None:
-        auth_uri = flow.step1_get_authorize_url()
-        return redirect(auth_uri)
+def printhen_response(from_addr, to_addr, subject, msg):
+    msg1 = MIMEText(msg)
+    msg1['Subject'] = subject
+    msg1['From'] = from_addr
+    msg1['To'] = to_addr
+    try:
+        with open('credentials.json') as data_file:
+            data = json.load(data_file)
+        pprint(data)
+    except:
+        print "CREDENTIALS NOT FOUND"
+        return
+    s = smtplib.SMTP_SSL(data["smtp_hostname"], 465)
+    #s.starttls()
+    s.login(data["username"], data["password"])
+    s.sendmail(from_addr, [to_addr], msg1.as_string())
+    s.quit()
+
+def parseBody(body):
+    cmd = body.split()
+    d = dict(itertools.izip_longest(*[iter(cmd)] * 2, fillvalue=""))
+    return d
+
+@csrf_exempt
+def admin(request):
+    if request.method == 'POST':
+        form = AdminForm(request.POST)
+        if form.is_valid():
+            with open('credentials.json', 'w') as outfile:
+                json.dump(form.cleaned_data, outfile)
+            return HttpResponse(json.dumps(form.cleaned_data))
+
     else:
-        auth_code = request.POST.get('code','')
-        credentials = flow.step2_exchange(auth_code)
-        request.session['credentials'] = credentials.to_json()
-        return redirect('index')
+        form = AdminForm()
 
-
+    return render(request, 'printhen/admin.html', {'form': form})

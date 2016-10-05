@@ -1,0 +1,67 @@
+.inspect-form th {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.inspect-form #content-main {
+    min-width: 980px;
+    margin: 0 auto;
+    float: none;
+}
+.inspect-form table {
+    width: 100%;
+}
+.inspect-form .database-details td:first-child {
+    width: 60%;
+}
+.inspect-form .server-status td {
+    text-align: center;
+}
+.inspect-form .database-details td:nth-child(n+2) {
+    text-align: center;
+}
+.inspect-form .key-details td {
+    text-align: center;
+}
+.inspect-form .key-data td {
+    text-align: left;
+}
+.inspect-form .key-details tr:hover td,
+.inspect-form .key-data tr:hover td,
+.inspect-form .database-details tr:hover td {
+    background: #FFFF80;
+}
+.inspect-form .key-data td:nth-child(2) {
+    font-family: monospace;
+    width: 99%;
+}
+.inspect-form .details td {
+    width: 50%;
+    word-break: break-all;
+}
+.inspect-form .key-data td:nth-child(2) {
+    word-break: break-all;
+}
+td.error {
+    font-weight: bold;
+    color: #B22222;
+}
+.inspect-form .paginator a,
+.inspect-form .paginator span {
+    display: inline-block;
+    padding: 5px;
+    border: 1px solid gray;
+    margin: 5px;
+}
+dl.details dt{
+    margin: 0px;
+    float: left;
+    clear: left;
+    width: 160px;
+    text-align: right;
+    font-weight: normal;
+}
+dl.details dd{
+    margin: 0px;
+    margin-left: 170px;
+}
