@@ -10,6 +10,7 @@ import easyimap
 import cups
 import itertools
 import smtplib
+from . import printhen_nltk
 from pprint import pprint
 from email.mime.text import MIMEText
 
@@ -56,7 +57,7 @@ def checkForMail():
         #     return
 
         # else:
-        body = body[body.find("begin print")+11:body.find("end print")]
+        #body = body[body.find("begin print")+11:body.find("end print")]
         op = parseBody(body)
         conn = cups.Connection()
         print body
@@ -109,8 +110,11 @@ def printhen_response(from_addr, to_addr, subject, msg):
     s.quit()
 
 def parseBody(body):
-    cmd = body.split()
-    d = dict(itertools.izip_longest(*[iter(cmd)] * 2, fillvalue=""))
+    printhen_nltk.extract_information(body)
+    d  = {}
+    d['from'] = printhen_nltk.getFrom()
+    d['to'] = printhen_nltk.getTo()
+    d['copies']= printhen_nltk.getCopies()
     return d
 
 # @periodic_task(run_every=datetime.timedelta(minutes=55))
