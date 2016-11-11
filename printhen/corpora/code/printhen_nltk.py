@@ -148,7 +148,11 @@ def main():
                 if(DEBUG):
                     print from_
             if(DEBUG):
-                print result[index].leaves()
+                try:
+                    print result[index].leaves()
+                except:
+                    print "I didnt quite understand what you said can you rephrase your sentence?"
+                    return
             for leaf in result[index]:
                 to = number(leaf[0])
                 if(DEBUG):
@@ -160,7 +164,11 @@ def main():
                 print "COPIES"
             try: 
                 if(DEBUG):
-                    print result[index-2].leaves()
+                    try:
+                        print result[index-2].leaves()
+                    except:
+                        print "I didnt quite understand what you said can you rephrase your sentence?"
+                        return
                 for leaf in result[index-2]:
                     if(to!=number(leaf[0])):
                         if(leaf[1]=="CD"):
