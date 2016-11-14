@@ -4,6 +4,7 @@ from celery.task import periodic_task
 from celery.task.schedules import crontab
 from celery import shared_task
 from celery.exceptions import SoftTimeLimitExceeded
+from django.conf import settings
 import datetime
 import json
 import easyimap
@@ -15,7 +16,7 @@ from pprint import pprint
 from email.mime.text import MIMEText
 
 @shared_task
-@periodic_task(run_every=datetime.timedelta(seconds=2))
+@periodic_task(run_every=datetime.timedelta(seconds=10))
 def checkForMail():
     try:
         with open('/home/pi/printhen/credentials.json') as data_file:
@@ -81,7 +82,7 @@ def checkForMail():
             options = {}
             options['copies'] = op['copies']
             s = []
-            if(op['from']== -1) or op['to']==-1):
+            if((op['from']== -1) or (op['to']==-1)):
                 pass
                 #do nothing
             else:
@@ -119,11 +120,7 @@ def printhen_response(from_addr, to_addr, subject, msg):
     s.quit()
 
 def parseBody(body):
-    printhen_nltk.extract_information(body)
-    d  = {}
-    d['from'] = printhen_nltk.getFrom()
-    d['to'] = printhen_nltk.getTo()
-    d['copies']= printhen_nltk.getCopies()
+    d = printhen_nltk.extract_information(body)
     return d
 
 # @periodic_task(run_every=datetime.timedelta(minutes=55))
