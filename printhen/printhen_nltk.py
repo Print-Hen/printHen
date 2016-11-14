@@ -71,7 +71,7 @@ def preProcessText(sentence):
 reads all our corpus and returns the wordlist
 '''
 def readCorpora():
-    corpus_root = 'corpora/corpora'
+    corpus_root = 'printhen/corpora/corpora'
     wordlists = PlaintextCorpusReader(corpus_root, '.*')
     return wordlists
 
@@ -212,10 +212,11 @@ def extract_information(sentence):
     print "it seems like you want to print " + str(copies) +" copies of the document " + "from pages " + str(from_) + " to " + str(to)
     print "\n"
     print "Have I guessed correctly :)?"
-    FROM_ = from_
-    TO_ = to
-    COPIES_ = copies
-
+    d = {}
+    d['from'] = str(from_)
+    d['to'] = str(to)
+    d['copies'] = str(copies)
+    return d
 
 def getFrom():
     return FROM_

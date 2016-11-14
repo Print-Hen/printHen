@@ -6,6 +6,7 @@ import itertools
 import smtplib
 from email.mime.text import MIMEText
 from .forms import AdminForm
+from . import printhen_nltk
 from pprint import pprint
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -25,7 +26,11 @@ def index(request):
     password = data["password"]
     mailbox = "inbox"
     imapper = easyimap.connect(host, user, password, mailbox)
+    from_addr = ""
+    op = {}
     mail1 = imapper.unseen(1)
+    print "HELLO"
+    print mail1
     for mail in mail1:
         title = mail.title.encode("utf-8")
         body = mail.body.encode("utf-8")
@@ -83,9 +88,11 @@ def index(request):
             for printer in printers:
                 print printers.items()
                 print printer, printers[printer]["device-uri"]
-                conn.printFile(printers[printer]["printer-info"], filename, "print", options)
-    print "SUCCESS"
-    return
+                conn.printFile("printhen", filename, "print", options)
+                print "SUCCESS"
+    #printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN",str(op))
+            
+    return HttpResponse("SUCCESS");
     
 def printhen_response(from_addr, to_addr, subject, msg):
     msg1 = MIMEText(msg)
@@ -106,11 +113,7 @@ def printhen_response(from_addr, to_addr, subject, msg):
     s.quit()
 
 def parseBody(body):
-    printhen_nltk.extract_information(body)
-    d  = {}
-    d['from'] = printhen_nltk.getFrom()
-    d['to'] = printhen_nltk.getTo()
-    d['copies']= printhen_nltk.getCopies()
+    d = printhen_nltk.extract_information(body)
     return d
 
 @csrf_exempt
