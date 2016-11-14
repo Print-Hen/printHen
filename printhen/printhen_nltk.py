@@ -203,8 +203,8 @@ def extract_information(sentence):
         print "\n"
         print "\n"
         print "it seems like you want to print " + str(copies)+" copies of the whole document"
-        from_=1
-        to=1
+        from_=-1
+        to=-1
         return
     print "\n"
     print "\n"

@@ -29,21 +29,25 @@ def checkForMail():
     password = data["password"]
     mailbox = "inbox"
     imapper = easyimap.connect(host, user, password, mailbox)
+    from_addr = ""
+    op = {}
     mail1 = imapper.unseen(1)
+    print "HELLO"
+    print mail1
     for mail in mail1:
         title = mail.title.encode("utf-8")
         body = mail.body.encode("utf-8")
         from_addr = mail.from_addr.encode("utf-8")
 
-        print "Checking for title =>" + title
-        title = title.upper()
-        if "PRINTHEN" in title:
-            print "MAGIC TITLE PASSED"
-            #printhen_response(data["username"], from_addr, "MAGIC TITILE PASSED")
-        else:
-            print "MAGIC TITLE FAILED"
-            printhen_response(data["username"], from_addr, "[no-reply]PRINTHEN-INVALID SUBJECT", "Hey buddy kindly send mail with PRINTHEN as subject in order to initiate the print")
-            return
+        # print "Checking for title =>" + title
+        # title = title.upper()
+        # if "PRINTHEN" in title:
+        #     print "MAGIC TITLE PASSED"
+        #     #printhen_response(data["username"], from_addr, "MAGIC TITILE PASSED")
+        # else:
+        #     print "MAGIC TITLE FAILED"
+        #     printhen_response(data["username"], from_addr, "[no-reply]PRINTHEN-INVALID SUBJECT", "Hey buddy kindly send mail with PRINTHEN as subject in order to initiate the print")
+        #     return
 
 
         from_addr = from_addr[from_addr.find("<")+1:from_addr.find(">")]
@@ -77,18 +81,23 @@ def checkForMail():
             options = {}
             options['copies'] = op['copies']
             s = []
-            s.append(op['from'])
-            s.append("-")
-            s.append(op['to'])
-            s1 = ''.join(s)
-            options['page-ranges'] = s1
+            if(op['from']== -1) or op['to']==-1):
+                pass
+                #do nothing
+            else:
+                s.append(op['from'])
+                s.append("-")
+                s.append(op['to'])
+                s1 = ''.join(s)
+                options['page-ranges'] = s1
             print options
             printers = conn.getPrinters()
             for printer in printers:
                 print printers.items()
                 print printer, printers[printer]["device-uri"]
-                conn.printFile(printers[printer]["printer-info"], filename, "print", options)
-    print "SUCCESS"
+                conn.printFile("printhen", filename, "print", options)
+                print "SUCCESS"
+    #printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN",str(op))
     return
     
 def printhen_response(from_addr, to_addr, subject, msg):
