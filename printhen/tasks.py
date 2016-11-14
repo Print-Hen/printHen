@@ -96,8 +96,19 @@ def checkForMail():
             for printer in printers:
                 print printers.items()
                 print printer, printers[printer]["device-uri"]
-                conn.printFile("printhen", filename, "print", options)
+                try:
+                    printer_returns = conn.printFile("printhen", filename, "print", options)
+                except cups.IPPError as (status, description):
+                    print 'IPP status is %d' % status
+                    print 'Meaning:', description
+                    printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN ERROR - " +str(status) ,Descrption)
+                    return
+                job-state = conn.getJobAttributes(printer_returns)["job-state"]
+                while(job-state!=9):
+                    print job-state
                 print "SUCCESS"
+                printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN PRINT SUCCESS","Your Print has been successfully done.")
+                    
     #printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN",str(op))
     return
     
