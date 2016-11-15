@@ -85,6 +85,9 @@ def checkForMail():
             if((op['from']== -1) or (op['to']==-1)):
                 pass
                 #do nothing
+            elif(op['from']== -2) or (op['to']==-2)):
+                printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-COMMAND NOT UNDERSTOOD", "I didnt understand what you said can u  rephrase your sentence?")
+                return
             else:
                 s.append(op['from'])
                 s.append("-")

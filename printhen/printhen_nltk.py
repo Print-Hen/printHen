@@ -12,67 +12,105 @@ DEBUG = True
 FROM_ = 0
 TO_ = 0
 COPIES_ = 1
+isSinglePageRange = False
 def preProcessText(sentence):
-    #checking if user has given range.example : 3-4 5-7 etc.
-    sentence = re.sub(r'\-'," to ",(sentence))
-    #removing all special characters from the sentence
     sentence = re.sub(r'a c\w+'," 1 copies",sentence)
     sentence = re.sub(r'[\W]'," ",sentence)
     sentence = re.sub(r'pages',"page",sentence)
-   
-    if(DEBUG):
-        print sentence
-    #if the user has given page 4 to page 5 removing it inorder to process the range
-    m = re.findall(r'page\S*(?:\s\S+)?',(sentence))
-    try:
+    global isSinglePageRange
+    isSinglePageRange = checkIfSinglePageRange(sentence)
+    if(isSinglePageRange):
+        m = re.findall(r'(?:\S+\s)?\S*page\S*(?:\s\S+)?',(sentence))
+        try:
+            if m:
+                foundPage = m[0];
+                if(DEBUG):
+                    print "found Page = ";
+                    print  foundPage
+        except:
+            pass
+        foundcopies = ""
+        m  = re.search(r'(?:\S+\s)?\S*copies\S*(?:\s\S+)?',sentence)
         if m:
-            foundFromPage,foundToPage = m[0],m[1];
+            foundcopies = m.group(0)
             if(DEBUG):
-                print "foundFrom Page = ";
-                print  foundFromPage
-                print "foundToPage = ";
-                print  foundToPage
-            foundFromPage = re.sub(r'page','',foundFromPage)
-            foundToPage = re.sub(r'page','',foundToPage)
-            foundFromPage = re.sub('\W+','',foundFromPage)
-            foundToPage = re.sub('\W+','',foundToPage)
-        
-            if(DEBUG):
-                print "foundFrom Page = ";
-                print  foundFromPage
-                print "foundToPage = ";
-                print  foundToPage
-            sentence = re.sub(r'page\S*(?:\s\S+)?',foundFromPage,sentence,count=1,flags=0)
-            sentence = re.sub(r'page\S*(?:\s\S+)?',foundToPage,sentence,count=1,flags=0)
-            if(DEBUG):
-                print "sentence" + sentence
-    except:
-        pass 
-    m = re.search(r'(?:\S+\s)?\S*to\S*(?:\s\S+)?',sentence)
-    found = ""
-    if m:
-         found = m.group(0)
-         if(DEBUG):
-            print "found " +  found
-    foundcopies = ""
-    m  = re.search(r'(?:\S+\s)?\S*copies\S*(?:\s\S+)?',sentence)
-    if m:
-         foundcopies = m.group(0)
-         if(DEBUG):
-            print "found copies " + foundcopies
+                print "found copies " + foundcopies
          
-    sentence = found + " " + foundcopies
-    if(DEBUG):
-        print "sentence = " +  sentence
-    tokens = word_tokenize(sentence.lower())
-    return tokens
+        sentence = foundPage + " " + foundcopies
+        if(DEBUG):
+            print "sentence = " +  sentence
+        tokens = word_tokenize(sentence.lower())
+        return tokens
+    else:
+        #checking if user has given range.example : 3-4 5-7 etc.
+        sentence = re.sub(r'\-'," to ",(sentence))
+        #removing all special characters from the sentence
+        sentence = re.sub(r'a c\w+'," 1 copies",sentence)
+        sentence = re.sub(r'[\W]'," ",sentence)
+        sentence = re.sub(r'pages',"page",sentence)
+   
+        if(DEBUG):
+            print sentence
+        #if the user has given page 4 to page 5 removing it inorder to process the range
+        m = re.findall(r'page\S*(?:\s\S+)?',(sentence))
+        try:
+            if m:
+                foundFromPage,foundToPage = m[0],m[1];
+                if(DEBUG):
+                    print "foundFrom Page = ";
+                    print  foundFromPage
+                    print "foundToPage = ";
+                    print  foundToPage
+                foundFromPage = re.sub(r'page','',foundFromPage)
+                foundToPage = re.sub(r'page','',foundToPage)
+                foundFromPage = re.sub('\W+','',foundFromPage)
+                foundToPage = re.sub('\W+','',foundToPage)
+        
+                if(DEBUG):
+                    print "foundFrom Page = ";
+                    print  foundFromPage
+                    print "foundToPage = ";
+                    print  foundToPage
+                sentence = re.sub(r'page\S*(?:\s\S+)?',foundFromPage,sentence,count=1,flags=0)
+                sentence = re.sub(r'page\S*(?:\s\S+)?',foundToPage,sentence,count=1,flags=0)
+                if(DEBUG):
+                    print "sentence" + sentence
+        except:
+            pass 
+        m = re.search(r'(?:\S+\s)?\S*to\S*(?:\s\S+)?',sentence)
+        found = ""
+        if m:
+            found = m.group(0)
+            if(DEBUG):
+                print "found " +  found
+        foundcopies = ""
+        m  = re.search(r'(?:\S+\s)?\S*copies\S*(?:\s\S+)?',sentence)
+        if m:
+            foundcopies = m.group(0)
+            if(DEBUG):
+                print "found copies " + foundcopies
+         
+        sentence = found + " " + foundcopies
+        if(DEBUG):
+            print "sentence = " +  sentence
+        tokens = word_tokenize(sentence.lower())
+        return tokens
+
+def checkIfSinglePageRange(sentence):
+    #checking if user has given range.example : 3-4 5-7 etc.
+        #removing all special characters from the sentence
+        if "page" in sentence and ("to" not in sentence and "from" not in sentence):
+            return True
+        else:
+            return False
+
 
 '''
 reads all our corpus and returns the wordlist
 '''
 def readCorpora():
-    corpus_root = 'printhen/corpora/corpora'
-    #corpus_root = 'corpora/corpora'
+    #corpus_root = 'printhen/corpora/corpora'
+    corpus_root = 'corpora/corpora'
     wordlists = PlaintextCorpusReader(corpus_root, '.*')
     return wordlists
 
@@ -86,7 +124,7 @@ def parseValues(keywords,grammar,pagefalse):
     #adding print to the stop words.
     stop.add("print")
     stop.remove("to")
-    if(pagefalse):
+    if(isSinglePageRange==False):
         stop.add("page")
     #removing stop words
     pure_tokens = [i for i in keywords if i not in stop]
@@ -100,6 +138,7 @@ def parseValues(keywords,grammar,pagefalse):
     return result
 
 def extract_information(sentence):
+    fromToSet = False
     from_ = 0
     to = 0
     copies = 1
@@ -131,7 +170,15 @@ def extract_information(sentence):
     if(DEBUG):
         print ("Keywords = ")
         print keywords
-
+    if not keywords:
+        from_ = -2
+        to = -2
+        copies = -2
+        d = {}
+        d['from'] = str(from_)
+        d['to'] = str(to)
+        d['copies'] = str(copies)
+        return d
     result = parseValues(keywords,'''
             NP: {<NN.>}
             CP: {<CD>}
@@ -142,6 +189,26 @@ def extract_information(sentence):
         print((result))
     #result.draw()
     for index,res in enumerate(result.subtrees()):
+        
+        if(isSinglePageRange):
+            if(res.label() == "CP"):
+                if(DEBUG):
+                    print "PAGE CP"
+                    print fromToSet
+                    if(fromToSet == False):
+                        if("page" in result[index-2].leaves()[0][0]):
+                            for leaf in res.leaves():
+                                from_ = number(leaf[0])
+                                to = number(leaf[0])
+                            fromToSet = True
+                        elif("page" in result[index].leaves()[0][0]):
+                            for leaf in res.leaves():
+                                from_ = number(leaf[0])
+                                to = number(leaf[0])
+                            fromToSet = True
+                        else:
+                            pass
+    else:
         if res.label() == "TO":
             if(DEBUG):
                 print "TO" 
@@ -155,7 +222,14 @@ def extract_information(sentence):
                     print result[index].leaves()
                 except:
                     print "I didnt quite understand what you said can you rephrase your sentence?"
-                    return
+                    from_ = -2
+                    to = -2
+                    copies = -2
+                    d = {}
+                    d['from'] = str(from_)
+                    d['to'] = str(to)
+                    d['copies'] = str(copies)
+                    return d
             for leaf in result[index]:
                 to = number(leaf[0])
                 if(DEBUG):
@@ -171,7 +245,14 @@ def extract_information(sentence):
                         print result[index-2].leaves()
                     except:
                         print "I didnt quite understand what you said can you rephrase your sentence?"
-                        return
+                        from_ = -2
+                        to = -2
+                        copies = -2
+                        d = {}
+                        d['from'] = str(from_)
+                        d['to'] = str(to)
+                        d['copies'] = str(copies)
+                        return d
                 for leaf in result[index-2]:
                     if(to!=number(leaf[0])):
                         if(leaf[1]=="CD"):
