@@ -99,7 +99,7 @@ def preProcessText(sentence):
 def checkIfSinglePageRange(sentence):
     #checking if user has given range.example : 3-4 5-7 etc.
         #removing all special characters from the sentence
-        if "page" in sentence and ("to" not in sentence and "from" not in sentence):
+        if "page" in sentence and ("to" not in sentence or "from" not in sentence):
             return True
         else:
             return False
@@ -109,8 +109,8 @@ def checkIfSinglePageRange(sentence):
 reads all our corpus and returns the wordlist
 '''
 def readCorpora():
-    #corpus_root = 'printhen/corpora/corpora'
-    corpus_root = 'corpora/corpora'
+    corpus_root = 'printhen/corpora/corpora'
+    #corpus_root = 'corpora/corpora'
     wordlists = PlaintextCorpusReader(corpus_root, '.*')
     return wordlists
 
@@ -171,9 +171,9 @@ def extract_information(sentence):
         print ("Keywords = ")
         print keywords
     if not keywords:
-        from_ = -2
-        to = -2
-        copies = -2
+        from_ = -1
+        to = -1
+        copies = 1
         d = {}
         d['from'] = str(from_)
         d['to'] = str(to)
@@ -222,9 +222,9 @@ def extract_information(sentence):
                     print result[index].leaves()
                 except:
                     print "I didnt quite understand what you said can you rephrase your sentence?"
-                    from_ = -2
-                    to = -2
-                    copies = -2
+                    from_ = -1
+                    to = -1
+                    copies = 1
                     d = {}
                     d['from'] = str(from_)
                     d['to'] = str(to)
@@ -245,9 +245,9 @@ def extract_information(sentence):
                         print result[index-2].leaves()
                     except:
                         print "I didnt quite understand what you said can you rephrase your sentence?"
-                        from_ = -2
-                        to = -2
-                        copies = -2
+                        from_ = -1
+                        to = -1
+                        copies = 1
                         d = {}
                         d['from'] = str(from_)
                         d['to'] = str(to)

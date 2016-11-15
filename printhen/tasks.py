@@ -82,10 +82,10 @@ def checkForMail():
             options = {}
             options['copies'] = op['copies']
             s = []
-            if((op['from']== -1) or (op['to']==-1)):
+            if((op['from']== '-1') or (op['to']=='-1')):
                 pass
                 #do nothing
-            elif(op['from']== -2) or (op['to']==-2)):
+            elif((op['from']== '-2') or (op['to']=='-2')):
                 printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-COMMAND NOT UNDERSTOOD", "I didnt understand what you said can u  rephrase your sentence?")
                 return
             else:
@@ -104,16 +104,16 @@ def checkForMail():
                 except cups.IPPError as (status, description):
                     print 'IPP status is %d' % status
                     print 'Meaning:', description
-                    printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN ERROR - " +str(status) ,Descrption)
+                    printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN ERROR - " +str(status) ,description)
                     return
                 job_state = conn.getJobAttributes(printer_returns)["job-state"]
                 printer_state = {};
                 while(job_state!=9):
-                    print job_state
+                    #print job_state
                     job_state = conn.getJobAttributes(printer_returns)["job-state"]
                     if(job_state == 5):
                          printer_state = conn.getPrinterAttributes("printhen",requested_attributes=["printer-state-reasons",])
-                         print printer_state
+                         #print printer_state
                     if(job_state == 8):
                         printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN PRINT ABORT" ,"PRINT ABORTED FOR UNKNOWN REASON")
                         return
@@ -123,6 +123,7 @@ def checkForMail():
                     for state in printer_state['printer-state-reasons']:
 			if("offline-report" in state):
                             printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-PRINTER OFFLINE" ,"PRINTER IS OFFLINE KINDLY CONTACT ADMIN")
+                            conn.cancelJob(printer_returns, purge_job=True)
                             return
                 print "SUCCESS"
 
