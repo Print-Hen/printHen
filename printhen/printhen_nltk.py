@@ -14,6 +14,32 @@ TO_ = 0
 COPIES_ = 1
 isSinglePageRange = False
 def preProcessText(sentence):
+    keywords = word_tokenize(sentence.lower())
+    wordlists = readCorpora()
+    #print ("file Ids = ")
+    #print wordlists.fileids()
+    
+    #rewriting the command so that if user  has shortforms or any spelling mistake
+    copy_words = wordlists.words("copy_words")
+    from_words = wordlists.words("from_words")
+    to_words   = wordlists.words("to_words")
+    page_words   = wordlists.words("page_words")
+
+    for index, key in enumerate(keywords):
+        if(key in copy_words):
+            keywords[index] = "copies"
+
+        if(key in from_words):
+            keywords[index] = "from"
+        if(key in to_words):
+            keywords[index] = "to"
+        if(key in page_words):
+            keywords[index] = "page"
+    sentence = " ".join(keywords)
+    if(DEBUG):
+        print 
+    # Produce: "Hello-world"
+    
     sentence = re.sub(r'a c\w+'," 1 copies",sentence)
     sentence = re.sub(r'[\W]'," ",sentence)
     sentence = re.sub(r'pages',"page",sentence)
@@ -146,26 +172,7 @@ def extract_information(sentence):
     for index,k in enumerate(keywords):
         'Checking if the number given is ordinal viz. 3rd 5th etc.'
         keywords[index] = re.sub(r'nd$|th$|rd$|st$',"",(k))
-    wordlists = readCorpora()
-    #print ("file Ids = ")
-    #print wordlists.fileids()
     
-    #rewriting the command so that if user  has shortforms or any spelling mistake
-    copy_words = wordlists.words("copy_words")
-    from_words = wordlists.words("from_words")
-    to_words   = wordlists.words("to_words")
-    page_words   = wordlists.words("page_words")
-
-    for index, key in enumerate(keywords):
-        if(key in copy_words):
-            keywords[index] = "copies"
-
-        if(key in from_words):
-            keywords[index] = "from"
-        if(key in to_words):
-            keywords[index] = "to"
-        if(key in page_words):
-            keywords[index] = "page"
 
     if(DEBUG):
         print ("Keywords = ")
@@ -208,34 +215,34 @@ def extract_information(sentence):
                             fromToSet = True
                         else:
                             pass
-    else:
-        if res.label() == "TO":
-            if(DEBUG):
-                print "TO" 
-                print result[index-2].leaves()
-            for leaf in result[index-2]:
-                from_ = number(leaf[0])
+        else:
+            if res.label() == "TO":
                 if(DEBUG):
-                    print from_
-            if(DEBUG):
-                try:
-                    print result[index].leaves()
-                except:
-                    print "I didnt quite understand what you said can you rephrase your sentence?"
-                    from_ = -1
-                    to = -1
-                    copies = 1
-                    d = {}
-                    d['from'] = str(from_)
-                    d['to'] = str(to)
-                    d['copies'] = str(copies)
-                    return d
-            for leaf in result[index]:
-                to = number(leaf[0])
+                    print "TO" 
+                    print result[index-2].leaves()
+                for leaf in result[index-2]:
+                    from_ = number(leaf[0])
+                    if(DEBUG):
+                        print from_
                 if(DEBUG):
-                    print to
-            if(DEBUG):
-                print "TO"
+                    try:
+                        print result[index].leaves()
+                    except:
+                        print "I didnt quite understand what you said can you rephrase your sentence?"
+                        from_ = -1
+                        to = -1
+                        copies = 1
+                        d = {}
+                        d['from'] = str(from_)
+                        d['to'] = str(to)
+                        d['copies'] = str(copies)
+                        return d
+                for leaf in result[index]:
+                    to = number(leaf[0])
+                    if(DEBUG):
+                        print to
+                if(DEBUG):
+                    print "TO"
         if res.label() == "NP":
             if(DEBUG):
                 print "COPIES"
