@@ -103,10 +103,26 @@ def checkForMail():
                     print 'Meaning:', description
                     printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN ERROR - " +str(status) ,Descrption)
                     return
-                job-state = conn.getJobAttributes(printer_returns)["job-state"]
-                while(job-state!=9):
-                    print job-state
+                job_state = conn.getJobAttributes(printer_returns)["job-state"]
+                printer_state = {};
+                while(job_state!=9):
+                    print job_state
+                    job_state = conn.getJobAttributes(printer_returns)["job-state"]
+                    if(job_state == 5):
+                         printer_state = conn.getPrinterAttributes("printhen",requested_attributes=["printer-state-reasons",])
+                         print printer_state
+                    if(job_state == 8):
+                        printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN PRINT ABORT" ,"PRINT ABORTED FOR UNKNOWN REASON")
+                        return
+                    if(job_state == 7):
+                        printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN PRINT CANCELLED" ,"PRINT CANCELLED BY ADMIN")
+                        return
+                    for state in printer_state['printer-state-reasons']:
+			if("offline-report" in state):
+                            printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-PRINTER OFFLINE" ,"PRINTER IS OFFLINE KINDLY CONTACT ADMIN")
+                            return
                 print "SUCCESS"
+
                 printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN PRINT SUCCESS","Your Print has been successfully done.")
                     
     #printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN",str(op))
