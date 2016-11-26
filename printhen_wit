@@ -1,0 +1,3 @@
+#! /bin/sh
+
+python printhen_wit.py "$1"

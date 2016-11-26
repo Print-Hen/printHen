@@ -135,8 +135,8 @@ def checkIfSinglePageRange(sentence):
 reads all our corpus and returns the wordlist
 '''
 def readCorpora():
-    corpus_root = 'printhen/corpora/corpora'
-    #corpus_root = 'corpora/corpora'
+    #corpus_root = 'printhen/corpora/corpora'
+    corpus_root = 'corpora/corpora'
     wordlists = PlaintextCorpusReader(corpus_root, '.*')
     return wordlists
 
