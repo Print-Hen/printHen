@@ -11,7 +11,7 @@ import easyimap
 import cups
 import itertools
 import smtplib
-from . import printhen_nltk
+from . import printhen_wit
 from pprint import pprint
 from email.mime.text import MIMEText
 
@@ -112,6 +112,7 @@ def checkForMail():
                 print printers.items()
                 print printer, printers[printer]["device-uri"]
                 try:
+                    pass
                     #printer_returns = conn.printFile("printhen", filename, "print", finaOptions)
                 except cups.IPPError as (status, description):
                     print 'IPP status is %d' % status
@@ -164,7 +165,7 @@ def printhen_response(from_addr, to_addr, subject, msg):
     s.quit()
 
 def parseBody(body):
-    d = printhen_nltk.extract_information(body)
+    d = printhen_wit.extract_information(body)
     return d
 
 # @periodic_task(run_every=datetime.timedelta(minutes=55))
