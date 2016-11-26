@@ -32,6 +32,7 @@ def checkForMail():
     imapper = easyimap.connect(host, user, password, mailbox)
     from_addr = ""
     op = {}
+    options = {}
     mail1 = imapper.unseen(1)
     print "HELLO"
     print mail1
@@ -70,8 +71,18 @@ def checkForMail():
         if not mail.attachments:
             printhen_response(data["username"], from_addr, "[no-reply]PRINTHEN-NO ATTACHMENT FOUND", "Hey Buddy, I guess you forgot to attach a document for printing")
             return
+        if(op['from_page'] and op['to_page']):
+            options['from'] = op['from_page']
+            options['to']   = op['to_page']
 
-        if int(op['from']) > int(op['to']):
+        elif(op['page']):
+            options['from'] = op['page']
+            options['to']   = op['page']
+        else:
+            options['from'] = -1
+            options['to']   = -1
+             
+        if int(options['from']) > int(options['to']):
             printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-START PAGE GREATER THAN END PAGE", "hey buddy it seems like the from value is greater that to value kindly check it")
             return
         for attachment in mail.attachments:
@@ -79,34 +90,36 @@ def checkForMail():
             with open(filename, 'wb') as f:
                 f.write(attachment[1])
             #conn = cups.Connection()
-            options = {}
-            options['copies'] = op['copies']
+            finalOptions = {}
+            finalOptions['copies'] = op['copies']
+            
             s = []
-            if((op['from']== '-1') or (op['to']=='-1')):
+            if((options['from']== '-1') or (options['to']=='-1')):
                 pass
                 #do nothing
-            elif((op['from']== '-2') or (op['to']=='-2')):
-                printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-COMMAND NOT UNDERSTOOD", "I didnt understand what you said can u  rephrase your sentence?")
-                return
+            # elif((op['from']== '-2') or (op['to']=='-2')):
+            #     printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-COMMAND NOT UNDERSTOOD", "I didnt understand what you said can u  rephrase your sentence?")
+            #     return
             else:
-                s.append(op['from'])
+                s.append(options['from'])
                 s.append("-")
-                s.append(op['to'])
+                s.append(options['to'])
                 s1 = ''.join(s)
-                options['page-ranges'] = s1
-            print options
+                finalOptions['page-ranges'] = s1
+            print finalOptions
             printers = conn.getPrinters()
             for printer in printers:
                 print printers.items()
                 print printer, printers[printer]["device-uri"]
                 try:
-                    printer_returns = conn.printFile("printhen", filename, "print", options)
+                    #printer_returns = conn.printFile("printhen", filename, "print", finaOptions)
                 except cups.IPPError as (status, description):
                     print 'IPP status is %d' % status
                     print 'Meaning:', description
                     printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN ERROR - " +str(status) ,description)
                     return
-                job_state = conn.getJobAttributes(printer_returns)["job-state"]
+                #job_state = conn.getJobAttributes(printer_returns)["job-state"]
+                job_state = 9
                 printer_state = {};
                 while(job_state!=9):
                     #print job_state
