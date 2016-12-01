@@ -109,14 +109,14 @@ def index(request):
                 print printer, printers[printer]["device-uri"]
                 try:
                     pass
-                    #printer_returns = conn.printFile("printhen", filename, "print", finaOptions)
+                    printer_returns = conn.printFile("printhen", filename, "print", finalOptions)
                 except cups.IPPError as (status, description):
                     print 'IPP status is %d' % status
                     print 'Meaning:', description
                     printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN ERROR - " +str(status) ,description)
                     return
-                #job_state = conn.getJobAttributes(printer_returns)["job-state"]
-                job_state = 9
+                job_state = conn.getJobAttributes(printer_returns)["job-state"]
+                #job_state = 9
                 printer_state = {};
                 while(job_state!=9):
                     #print job_state
@@ -140,7 +140,7 @@ def index(request):
         printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN PRINT SUCCESS","Your Print has been successfully done.")
                     
     #printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN",str(op))
-    return
+    return HttpResponse("SUccess")
     
 def printhen_response(from_addr, to_addr, subject, msg):
     msg1 = MIMEText(msg)
