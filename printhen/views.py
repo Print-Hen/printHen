@@ -77,7 +77,9 @@ def index(request):
         else:
             options['from'] = -1
             options['to']   = -1
-             
+
+        
+                 
         if int(options['from']) > int(options['to']):
             printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-START PAGE GREATER THAN END PAGE", "hey buddy it seems like the from value is greater that to value kindly check it")
             return
@@ -88,7 +90,8 @@ def index(request):
             #conn = cups.Connection()
             finalOptions = {}
             finalOptions['copies'] = op['copies']
-            
+            if(op['onesided'] == True):
+                finalOptions['sides'] = 'one-sided'
             s = []
             if((options['from']== '-1') or (options['to']=='-1')):
                 pass
