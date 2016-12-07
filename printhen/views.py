@@ -67,11 +67,11 @@ def index(request):
         if not mail.attachments:
             printhen_response(data["username"], from_addr, "[no-reply]PRINTHEN-NO ATTACHMENT FOUND", "Hey Buddy, I guess you forgot to attach a document for printing")
             return
-        if(op['from_page'] and op['to_page']):
+        if(('from_page' in op) and ('to_page' in op):
             options['from'] = op['from_page']
             options['to']   = op['to_page']
 
-        elif(op['page']):
+        elif('page' in op):
             options['from'] = op['page']
             options['to']   = op['page']
         else:
