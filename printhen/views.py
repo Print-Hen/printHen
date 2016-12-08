@@ -13,6 +13,7 @@ from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.http import HttpResponse
+from subprocess import call
 def index(request):
     try:
         with open('/home/pi/printhen/credentials.json') as data_file:
@@ -60,13 +61,14 @@ def index(request):
 
         # else:
         #body = body[body.find("begin print")+11:body.find("end print")]
+       
+        if not mail.attachments:
+            printhen_response(data["username"], from_addr, "[no-reply]PRINTHEN-NO ATTACHMENT FOUND", "Hey Buddy, I guess you forgot to attach a document for printing")
+            return
         op = parseBody(body)
         conn = cups.Connection()
         print body
         print op
-        if not mail.attachments:
-            printhen_response(data["username"], from_addr, "[no-reply]PRINTHEN-NO ATTACHMENT FOUND", "Hey Buddy, I guess you forgot to attach a document for printing")
-            return
         if(('from_page' in op) and ('to_page' in op):
             options['from'] = op['from_page']
             options['to']   = op['to_page']
@@ -88,6 +90,12 @@ def index(request):
             with open(filename, 'wb') as f:
                 f.write(attachment[1])
             #conn = cups.Connection()
+            if(".pdf" not in attachment[0]):
+                name = attachment[0]
+                name = re.sub(r'\.(.*)','',name)
+                name = settings.MEDIA_PATH + name + ".pdf"  
+                call("unoconv -f pdf -o " + name + " " + filename)
+                filename = name
             finalOptions = {}
             finalOptions['copies'] = op['copies']
             if(op['onesided'] == True):
