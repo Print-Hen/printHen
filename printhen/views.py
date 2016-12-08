@@ -4,6 +4,7 @@ import easyimap
 import cups
 import itertools
 import smtplib
+import re
 from email.mime.text import MIMEText
 from .forms import AdminForm
 from . import printhen_wit
@@ -69,7 +70,7 @@ def index(request):
         conn = cups.Connection()
         print body
         print op
-        if(('from_page' in op) and ('to_page' in op):
+        if(('from_page' in op) and ('to_page' in op)):
             options['from'] = op['from_page']
             options['to']   = op['to_page']
 
@@ -94,7 +95,9 @@ def index(request):
                 name = attachment[0]
                 name = re.sub(r'\.(.*)','',name)
                 name = settings.MEDIA_PATH + name + ".pdf"  
-                call("unoconv -f pdf -o " + name + " " + filename)
+                print "converting " +  filename + " to " + name
+                print "calling " + "unoconv -f pdf -o " + name + " " + filename
+                call(["unoconv","-f","pdf","-o",name,filename])
                 filename = name
             finalOptions = {}
             finalOptions['copies'] = op['copies']
