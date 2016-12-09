@@ -55,7 +55,7 @@ def extract_value_whole_doc(request):
     else:
         context['copies'] = '1'
      
-        context['page'] = '-1'
+    context['page'] = '-1'
     if onesided:
         context['onesided'] = True
     else:
