@@ -20,7 +20,7 @@ from email.mime.text import MIMEText
 def checkForMail():
     try:
         with open('/home/pi/printhen/credentials.json') as data_file:
-           data = json.load(data_file)
+            data = json.load(data_file)
         pprint(data)
     except Exception,err:
         print err
@@ -64,24 +64,27 @@ def checkForMail():
 
         # else:
         #body = body[body.find("begin print")+11:body.find("end print")]
+       
+        if not mail.attachments:
+            printhen_response(data["username"], from_addr, "[no-reply]PRINTHEN-NO ATTACHMENT FOUND", "Hey Buddy, I guess you forgot to attach a document for printing")
+            return
         op = parseBody(body)
         conn = cups.Connection()
         print body
         print op
-        if not mail.attachments:
-            printhen_response(data["username"], from_addr, "[no-reply]PRINTHEN-NO ATTACHMENT FOUND", "Hey Buddy, I guess you forgot to attach a document for printing")
-            return
-        if(op['from_page'] and op['to_page']):
+        if(('from_page' in op) and ('to_page' in op)):
             options['from'] = op['from_page']
             options['to']   = op['to_page']
 
-        elif(op['page']):
+        elif('page' in op):
             options['from'] = op['page']
             options['to']   = op['page']
         else:
             options['from'] = -1
             options['to']   = -1
-             
+
+        
+                 
         if int(options['from']) > int(options['to']):
             printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-START PAGE GREATER THAN END PAGE", "hey buddy it seems like the from value is greater that to value kindly check it")
             return
@@ -90,9 +93,18 @@ def checkForMail():
             with open(filename, 'wb') as f:
                 f.write(attachment[1])
             #conn = cups.Connection()
+            if(".pdf" not in attachment[0]):
+                name = attachment[0]
+                name = re.sub(r'\.(.*)','',name)
+                name = settings.MEDIA_PATH + name + ".pdf"  
+                print "converting " +  filename + " to " + name
+                print "calling " + "unoconv -f pdf -o " + name + " " + filename
+                call(["unoconv","-f","pdf","-o",name,filename])
+                filename = name
             finalOptions = {}
             finalOptions['copies'] = op['copies']
-            
+            if(op['onesided'] == True):
+                finalOptions['sides'] = 'one-sided'
             s = []
             if((options['from']== '-1') or (options['to']=='-1')):
                 pass
@@ -113,14 +125,14 @@ def checkForMail():
                 print printer, printers[printer]["device-uri"]
                 try:
                     pass
-                    #printer_returns = conn.printFile("printhen", filename, "print", finaOptions)
+                    printer_returns = conn.printFile("printhen", filename, "print", finalOptions)
                 except cups.IPPError as (status, description):
                     print 'IPP status is %d' % status
                     print 'Meaning:', description
                     printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN ERROR - " +str(status) ,description)
                     return
-                #job_state = conn.getJobAttributes(printer_returns)["job-state"]
-                job_state = 9
+                job_state = conn.getJobAttributes(printer_returns)["job-state"]
+                #job_state = 9
                 printer_state = {};
                 while(job_state!=9):
                     #print job_state
@@ -144,7 +156,7 @@ def checkForMail():
         printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN PRINT SUCCESS","Your Print has been successfully done.")
                     
     #printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN",str(op))
-    return
+    return "Success"
     
 def printhen_response(from_addr, to_addr, subject, msg):
     msg1 = MIMEText(msg)
@@ -165,6 +177,7 @@ def printhen_response(from_addr, to_addr, subject, msg):
     s.quit()
 
 def parseBody(body):
+    body = email_strip.strip_mail(body)
     d = printhen_wit.extract_information(body)
     return d
 

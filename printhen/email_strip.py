@@ -5,9 +5,6 @@ def strip_mail(body):
     body = re.sub(r'\-\-(.*)','',body)
     body = re.sub(r'(r|R)egards.*','',body)
     body = re.sub(r'(t|T)hank.*','',body)
-    
-    #line = lines[0]
-    print body
     return body
 
 
