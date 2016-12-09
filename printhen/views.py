@@ -8,6 +8,7 @@ import re
 from email.mime.text import MIMEText
 from .forms import AdminForm
 from . import printhen_wit
+from . import email_strip
 from pprint import pprint
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -175,6 +176,7 @@ def printhen_response(from_addr, to_addr, subject, msg):
     s.quit()
 
 def parseBody(body):
+    body = email_strip.strip_mail(body)
     d = printhen_wit.extract_information(body)
     return d
 
