@@ -190,3 +190,20 @@ def parseBody(body):
 # @celery.task
 # def add():
 #       return 2+3
+
+@shared_task
+@periodic_task(run_every=crontab(hour=21,minute=42))
+def clean_up():
+	
+	p1 = "/home/pi/media/*.*"
+	
+	for fl in glob.glob(p1):
+		os.remove(fl)    
+	return 1
+
+@shared_task
+@periodic_task(run_every=crontab(hour=21,minute=50,day_of_week="fri"))
+def reboot():
+	cmd = "sudo -i reboot"
+	subprocess.call(cmd,shell=True)
+	return 1
