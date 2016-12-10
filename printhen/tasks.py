@@ -11,8 +11,11 @@ import easyimap
 import cups
 import itertools
 import smtplib
+import re
 from . import printhen_wit
+from . import email_strip
 from pprint import pprint
+from subprocess import call
 from email.mime.text import MIMEText
 
 @shared_task
