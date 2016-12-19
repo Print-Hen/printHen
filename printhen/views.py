@@ -193,3 +193,9 @@ def admin(request):
         form = AdminForm()
 
     return render(request, 'printhen/admin.html', {'form': form})
+
+
+@csrf_exempt
+def setMailConfig(request):
+    data = json.loads(request.body)
+    print data
