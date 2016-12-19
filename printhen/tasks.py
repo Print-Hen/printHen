@@ -17,6 +17,7 @@ from . import email_strip
 from pprint import pprint
 from subprocess import call
 from email.mime.text import MIMEText
+from .models import *
 
 @shared_task
 @periodic_task(run_every=datetime.timedelta(seconds=10))
@@ -154,12 +155,28 @@ def checkForMail():
                             printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-PRINTER OFFLINE" ,"PRINTER IS OFFLINE KINDLY CONTACT ADMIN")
                             conn.cancelJob(printer_returns, purge_job=True)
                             return
+                updatePrintHistory(from_addr)
                 print "SUCCESS"
 
         printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN PRINT SUCCESS","Your Print has been successfully done.")
                     
     #printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN",str(op))
     return "Success"
+    
+def updatePrintHistory(from_addr):
+    print "updating Print History"
+    try:
+        history = PrintHistory.objects.get(from_addr=from_addr)
+        history.__dict__
+    except:
+        history = None
+    if history is not None:
+        if(history.from_addr==from_addr):
+            history.count = history.count + 1
+            history.save()
+        else:
+            history = PrintHistory(from_addr=from_addr,count=1)
+            history.save()
     
 def printhen_response(from_addr, to_addr, subject, msg):
     msg1 = MIMEText(msg)
