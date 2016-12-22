@@ -75,6 +75,8 @@ def checkForMail():
                 printhen_response(data["username"], from_addr, "[no-reply]PRINTHEN-NO ATTACHMENT FOUND", "Hey Buddy, I guess you forgot to attach a document for printing")
                 return
             op = parseBody(body)
+            if('copies' not in op):
+                printhen_response(data["username"],from_addr,"[no-reply] WIT EXCEPTION",op)
             conn = cups.Connection()
             print body
             print op
