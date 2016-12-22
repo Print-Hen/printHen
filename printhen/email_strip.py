@@ -1,10 +1,17 @@
 import re
 
 def strip_mail(body):
-    body = re.sub(r'\n','',body)
-    body = re.sub(r'\-\-(.*)','',body)
-    body = re.sub(r'(r|R)egards.*','',body)
-    body = re.sub(r'(t|T)hank.*','',body)
+    body = re.sub(r'forwarded message','',body,flags=re.IGNORECASE)
+    body = re.sub(r'date?.\:.*\n','',body,flags=re.IGNORECASE)
+    body = re.sub(r'subject?.\:.*\n','',body,flags=re.IGNORECASE)
+    body = re.sub(r'[\w\.-]+@[\w\.-]+','',body,flags=re.IGNORECASE)
+    body = re.sub(r'from?.\:.*\n','',body,flags=re.IGNORECASE)
+    body = re.sub(r'to?.\:.*\n','',body,flags=re.IGNORECASE)
+    body = re.sub(r'\n','',body,flags=re.IGNORECASE)
+    body = re.sub(r'\b\-\-\b(\w*)','',body,flags=re.IGNORECASE)
+    body = re.sub(r'regards.*','',body,flags=re.IGNORECASE)
+    body = re.sub(r'thank.*','',body,flags=re.IGNORECASE)
+    body = re.sub(r'(\-|\=)*','',body,flags=re.IGNORECASE)
     return body
 
 
@@ -14,18 +21,57 @@ def strip_mail(body):
 if __name__ == "__main__":
     body = '''
     
-    print me two copies of page 3
+============ Forwarded message ============
+From : Raghuram Iyer <ragzzyr@putpeace.com>
+To : "printhen77"<printhen77@gmail.com>
+Date : Fri, 23 Dec 2016 00:45:10 +0530
+Subject : hello
+============ Forwarded message ============
+
+print me one copy
 
 
-Hitesh Verma
-Software Engineer
-PutPeace.com
-http://hiteshverma.in
 
-On Wed, Nov 23, 2016 at 10:57 PM, sandeep mederametla <deepu730@gmail.com> wrote:
-hey guys check this out,
+---------- Forwarded message ----------
+From: Raghuram Iyer <raghuram8892@gmail.com>
+Date: Thu, Dec 22, 2016 at 7:26 PM
+Subject: 
+To: printhen77@gmail.com
 
-https://razorpay.com/ecod/
+
+one copy
+
+
+
+-- 
+Regards
+Raghuram Iyer "Ragzzy-R"
+Lead Developer,
+Putpeace
+http://ragzzyr.com
+
+
+
+
+"I'm Trying to change the world,but i cant find the Source Code".
+
+
+
+
+-- 
+Regards
+Raghuram Iyer "Ragzzy-R"
+Lead Developer,
+Putpeace
+http://ragzzyr.com
+
+
+
+
+"I'm Trying to change the world,but i cant find the Source Code".
+
+
             '''
     # body = raw_input("Enter your Command")
     strip_mail(body)
+    #print strip_mail(body)
