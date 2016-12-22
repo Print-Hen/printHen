@@ -12,6 +12,7 @@ import cups
 import itertools
 import smtplib
 import re
+import traceback
 from . import printhen_wit
 from . import email_strip
 from pprint import pprint
