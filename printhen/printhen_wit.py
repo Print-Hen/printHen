@@ -1,6 +1,8 @@
 import sys
 from wit import Wit
 import uuid
+import traceback
+
 
 # if len(sys.argv) != 2:
 #     print('usage:printhen_wit' + ' <message>')

@@ -153,7 +153,7 @@ def checkForMail():
                             printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN PRINT CANCELLED" ,"PRINT CANCELLED BY ADMIN")
                             return
                         for state in printer_state['printer-state-reasons']:
-                if("offline-report" in state):
+                            if("offline-report" in state):
                                 printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-PRINTER OFFLINE" ,"PRINTER IS OFFLINE KINDLY CONTACT ADMIN")
                                 conn.cancelJob(printer_returns, purge_job=True)
                                 return
@@ -165,7 +165,7 @@ def checkForMail():
         #printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN",str(op))
         return "Success"
     except Exception,err:
-        printhen_response(data["username"],from_addr,"[no-reply] PRINTHEN EXCEPTION",str(traceback.print_exc()))    
+        printhen_response(data["username"],from_addr,"[no-reply] PRINTHEN EXCEPTION",traceback.print_exc())    
 def updatePrintHistory(from_addr):
     print "updating Print History"
     try:
