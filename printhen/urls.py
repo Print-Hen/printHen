@@ -20,5 +20,6 @@ import views
 urlpatterns = [
     url(r'^$',views.index,name='index'),
     url(r'^admin/',views.admin,name='admin'),
-     url(r'^credentialserror', TemplateView.as_view(template_name='printhen/credentialserror.html')),
+    url(r'^api/setmailconfig',views.setMailConfig,name='setmailconfig'),
+    url(r'^credentialserror', TemplateView.as_view(template_name='printhen/credentialserror.html')),
 ]

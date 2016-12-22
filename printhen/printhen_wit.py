@@ -42,6 +42,8 @@ def extract_value(request):
         context['onesided'] = True
     else:
         context['onesided'] = False
+    if (context['page'] is None):
+        context['page'] = '-1'
     return context
 
 def extract_value_whole_doc(request):

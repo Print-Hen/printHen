@@ -197,5 +197,16 @@ def admin(request):
 
 @csrf_exempt
 def setMailConfig(request):
-    data = json.loads(request.body)
-    print data
+    if request.method == 'POST':
+        data = {}
+        data['username']  = request.POST['username']
+        data['password']  = request.POST['password']
+        data['imap_hostname'] = request.POST['imap_server']
+        data['smtp_hostname'] = request.POST['smtp_server']    
+	with open('credentials.json', 'w') as outfile:
+                json.dump(data, outfile)
+    	return HttpResponse(json.dumps(data))
+    else:
+        return HttpResponse("no data received");
+
+
