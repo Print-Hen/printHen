@@ -19,6 +19,16 @@ from pprint import pprint
 from subprocess import call
 from email.mime.text import MIMEText
 from .models import *
+import datetime
+
+current_time_offline = datetime.datetime.now()
+elapsed_time_offline = 0
+prev_time_offline = datetime.datetime.now()
+
+current_time_media_jam = datetime.datetime.now()
+elapsed_time_media_jam = 0
+prev_time_media_jam = datetime.datetime.now()
+
 
 @shared_task
 @periodic_task(run_every=datetime.timedelta(seconds=10))
@@ -232,3 +242,32 @@ def reboot():
 	cmd = "sudo -i reboot"
 	subprocess.call(cmd,shell=True)
 	return 1
+
+
+@shared_task
+@periodic_task(run_every=datetime.timedelta(seconds=10))
+def printer_maintenance():
+	conn = cups.Connection();
+    printer_state = conn.getPrinterAttributes("printhen",requested_attributes=["printer-state-reasons",])
+    for state in printer_state['printer-state-reasons']:
+                            if("offline-report" in state):
+                                current_time_offline = datetime.datetime.now()
+                                elapsed_time_offline += current_time_offline.minute - prev_time_offline.minute
+                                prev_time_offline = current_time_offline
+                                if(elapsed_time_offline > 2):
+                                    printhen_response("raghuram8892@gmail.com", from_addr, "[no-reply] PRINTHEN-PRINTER OFFLINE" ,"Printer is offline kindly check it")
+                                    elapsed_time_offline=0
+                                    
+                            if("offline-report" not in state):
+                                elapsed_time_offline = 0
+                                prev_time_offline = datetime.datetime.now()
+                                current_time_offline = datetime.datetime.now()
+
+                            if("media-jam-warning" in state):
+                                current_time_media_jam = datetime.datetime.now()
+                                elapsed_minute_media_jam += current_time_media_jam.minute - prev_time_media_jam.minute
+                                prev_time_media_jam = current_time_media_jam
+                                if(elapsed_minute_media_jam > 2):
+                                    printhen_response("raghuram8892@gmail.com", from_addr, "[no-reply] PRINTHEN-Media Jam" ,"MEDIA JAMMED")
+                                    elapsedtime=0
+    
