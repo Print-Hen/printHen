@@ -27,7 +27,7 @@ def checkForMail():
         try:
             with open('/home/pi/printhen/credentials.json') as data_file:
                 data = json.load(data_file)
-            pprint(data)
+            #pprint(data)
         except Exception,err:
             print err
             return
@@ -40,7 +40,7 @@ def checkForMail():
         op = {}
         options = {}
         mail1 = imapper.unseen(1)
-        print "HELLO"
+        #print "HELLO"
         print mail1
         for mail in mail1:
             title = mail.title.encode("utf-8")
