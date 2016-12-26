@@ -10,6 +10,7 @@ from .forms import AdminForm
 from . import printhen_wit
 from . import email_strip
 from pprint import pprint
+from .models import *
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
@@ -209,5 +210,22 @@ def setMailConfig(request):
     	return HttpResponse(json.dumps(data))
     else:
         return HttpResponse("no data received");
+
+def getPrintHistory(request):
+    if request.method == 'POST':
+        try:
+            history = PrintHistory.objects.all()
+        except:
+            history = None
+        if(history not None):
+            data = {}
+            data['history'] = []
+            for h in history:
+                u_id = h.id
+                u_email = h.from_addr
+                u_count = h.count
+                data['history'].append({'id':u_id,'email':u_email,'count':u_count})
+            data = json.dumps(data)
+            return data
 
 
