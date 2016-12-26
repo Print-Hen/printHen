@@ -4,6 +4,8 @@ from celery.task import periodic_task
 from celery.task.schedules import crontab
 from celery import shared_task
 from celery.exceptions import SoftTimeLimitExceeded
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from django.conf import settings
 import datetime
 import json
@@ -15,6 +17,7 @@ import re
 import traceback
 from . import printhen_wit
 from . import email_strip
+from . import utils
 from pprint import pprint
 from subprocess import call
 from email.mime.text import MIMEText
@@ -205,10 +208,13 @@ def updatePrintHistory(from_addr):
         history.save()
     
 def printhen_response(from_addr, to_addr, subject, msg):
-    msg1 = MIMEText(msg)
+    msg1 = MIMEMultipart('alternative')
     msg1['Subject'] = subject
     msg1['From'] = from_addr
     msg1['To'] = to_addr
+    html = bake_email_template(to_addr,msg)
+    part = MIMEText(html, 'html')
+    msg1.attach(part1)
     try:
         with open('credentials.json') as data_file:
             data = json.load(data_file)
