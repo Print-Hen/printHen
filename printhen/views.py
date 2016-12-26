@@ -202,7 +202,8 @@ def setMailConfig(request):
         data['username']  = request.POST['username']
         data['password']  = request.POST['password']
         data['imap_hostname'] = request.POST['imap_server']
-        data['smtp_hostname'] = request.POST['smtp_server']    
+        data['smtp_hostname'] = request.POST['smtp_server']   
+        data['admin_email'] = request.POST['admin_email'] 
 	with open('credentials.json', 'w') as outfile:
                 json.dump(data, outfile)
     	return HttpResponse(json.dumps(data))

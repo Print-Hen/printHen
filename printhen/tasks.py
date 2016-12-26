@@ -44,6 +44,7 @@ def checkForMail():
         host = data["imap_hostname"]
         user = data["username"]
         password = data["password"]
+        admin_email = data["admin_email"]
         mailbox = "inbox"
         imapper = easyimap.connect(host, user, password, mailbox)
         from_addr = ""
@@ -148,6 +149,7 @@ def checkForMail():
                         print 'IPP status is %d' % status
                         print 'Meaning:', description
                         printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN ERROR - " +str(status) ,description)
+                        printhen_response(data["username"], admin_email, "PRINTHEN ADMIN-ERROR-"+str(status) + " " +str(from_addr), description)
                         return
                     job_state = conn.getJobAttributes(printer_returns)["job-state"]
                     #job_state = 9
@@ -167,6 +169,8 @@ def checkForMail():
                         for state in printer_state['printer-state-reasons']:
                             if("offline-report" in state):
                                 printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-PRINTER OFFLINE" ,"PRINTER IS OFFLINE KINDLY CONTACT ADMIN")
+                                printhen_response(data["username"], admin_email, "PRINTHEN ADMIN-PRINTER OFFLINE" ,"PRINTER IS OFFLINE KINDLY Check it")
+                                
                                 conn.cancelJob(printer_returns, purge_job=True)
                                 return
                     updatePrintHistory(from_addr)
