@@ -20,6 +20,8 @@ from subprocess import call
 from email.mime.text import MIMEText
 from .models import *
 import datetime
+import glob
+import os
 
 current_time_offline = datetime.datetime.now()
 elapsed_time_offline = 0
@@ -45,7 +47,7 @@ def checkForMail():
     password = data["password"]
     admin_email = data["admin_email"]
     mailbox = "inbox"
-   try:     
+    try:     
         imapper = easyimap.connect(host, user, password, mailbox)
         from_addr = ""
         op = {}
@@ -186,17 +188,21 @@ def checkForMail():
 def updatePrintHistory(from_addr):
     print "updating Print History"
     try:
+        print "MAIL SENT FROM"
+        print from_addr
         history = PrintHistory.objects.get(from_addr=from_addr)
-        history.__dict__
+        print history
     except:
         history = None
+        print "except"
+        #traceback.print_exc()
     if history is not None:
         if(history.from_addr==from_addr):
             history.count = history.count + 1
             history.save()
-        else:
-            history = PrintHistory(from_addr=from_addr,count=1)
-            history.save()
+    else:
+        history = PrintHistory(from_addr=from_addr,count=1)
+        history.save()
     
 def printhen_response(from_addr, to_addr, subject, msg):
     msg1 = MIMEText(msg)
@@ -232,10 +238,11 @@ def parseBody(body):
 #       return 2+3
 
 @shared_task
-@periodic_task(run_every=crontab(hour=21,minute=42))
+@periodic_task(run_every=crontab(hour=21,minute=30))
+#@periodic_task(run_every=datetime.timedelta(seconds=5))
 def clean_up():
-	
-	p1 = "/home/pi/media/*.*"
+	print "CLEANING UP MEDIA"	
+	p1 = "/home/pi/media/*"
 	
 	for fl in glob.glob(p1):
 		os.remove(fl)    
@@ -243,9 +250,11 @@ def clean_up():
 
 @shared_task
 @periodic_task(run_every=crontab(hour=21,minute=50,day_of_week="fri"))
+#@periodic_task(run_every=datetime.timedelta(seconds=60))
 def reboot():
-	cmd = "sudo -i reboot"
-	subprocess.call(cmd,shell=True)
+        print "REBOOTING PI FOR MAINTENANCE"
+	cmd = "sudo reboot"
+	call(cmd,shell=True)
 	return 1
 
 
