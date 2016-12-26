@@ -247,13 +247,21 @@ def reboot():
 @shared_task
 @periodic_task(run_every=datetime.timedelta(seconds=10))
 def printer_maintenance():
-	conn = cups.Connection();
+    global elapsed_time_offline
+    global elapsed_time_media_jam
+    global prev_time_offline
+    global prev_time_media_jam
+    global current_time_offline
+    global current_time_media_jam
+    conn = cups.Connection();
     printer_state = conn.getPrinterAttributes("printhen",requested_attributes=["printer-state-reasons",])
     for state in printer_state['printer-state-reasons']:
                             if("offline-report" in state):
+                                print "PRINTER OFFLINE"
                                 current_time_offline = datetime.datetime.now()
                                 elapsed_time_offline += current_time_offline.minute - prev_time_offline.minute
                                 prev_time_offline = current_time_offline
+				print "Printer offline for " + str(elapsed_time_offline) + "  minutes"
                                 if(elapsed_time_offline > 2):
                                     printhen_response("raghuram8892@gmail.com", from_addr, "[no-reply] PRINTHEN-PRINTER OFFLINE" ,"Printer is offline kindly check it")
                                     elapsed_time_offline=0
@@ -264,10 +272,13 @@ def printer_maintenance():
                                 current_time_offline = datetime.datetime.now()
 
                             if("media-jam-warning" in state):
+                                print "MEDIA JAM DETECTED"
                                 current_time_media_jam = datetime.datetime.now()
-                                elapsed_minute_media_jam += current_time_media_jam.minute - prev_time_media_jam.minute
+                                elapsed_time_media_jam  += current_time_media_jam.minute - prev_time_media_jam.minute
                                 prev_time_media_jam = current_time_media_jam
-                                if(elapsed_minute_media_jam > 2):
-                                    printhen_response("raghuram8892@gmail.com", from_addr, "[no-reply] PRINTHEN-Media Jam" ,"MEDIA JAMMED")
-                                    elapsedtime=0
+                                print "ELAPSED TIME SINCE MEDIA JAM DETECTION"
+                                print elapsed_time_media_jam
+                                if(elapsed_time_media_jam > 10):
+                                    #printhen_response("printhen77@gmail.com", "raghuram8892@gmail.com", "[no-reply] PRINTHEN-Media Jam" ,"MEDIA JAMMED")
+                                    elapsed_time_media_jam = 0
     
