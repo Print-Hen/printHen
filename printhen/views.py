@@ -211,13 +211,14 @@ def setMailConfig(request):
     else:
         return HttpResponse("no data received");
 
+@csrf_exempt
 def getPrintHistory(request):
     if request.method == 'POST':
         try:
             history = PrintHistory.objects.all()
         except:
             history = None
-        if(history not None):
+        if(history is not None):
             data = {}
             data['history'] = []
             for h in history:
@@ -226,6 +227,9 @@ def getPrintHistory(request):
                 u_count = h.count
                 data['history'].append({'id':u_id,'email':u_email,'count':u_count})
             data = json.dumps(data)
-            return data
+            return HttpResponse(data)
+        else:
+            return ("no database found")
 
-
+    else:
+         return HttpResponse("no more hacks")
