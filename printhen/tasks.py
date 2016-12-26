@@ -34,18 +34,18 @@ prev_time_media_jam = datetime.datetime.now()
 @periodic_task(run_every=datetime.timedelta(seconds=10))
 def checkForMail():
     try:
-        try:
-            with open('/home/pi/printhen/credentials.json') as data_file:
-                data = json.load(data_file)
+        with open('/home/pi/printhen/credentials.json') as data_file:
+            data = json.load(data_file)
             #pprint(data)
-        except Exception,err:
-            print err
-            return
-        host = data["imap_hostname"]
-        user = data["username"]
-        password = data["password"]
-        admin_email = data["admin_email"]
-        mailbox = "inbox"
+    except Exception,err:
+        print err
+        return
+    host = data["imap_hostname"]
+    user = data["username"]
+    password = data["password"]
+    admin_email = data["admin_email"]
+    mailbox = "inbox"
+   try:     
         imapper = easyimap.connect(host, user, password, mailbox)
         from_addr = ""
         op = {}
@@ -181,7 +181,8 @@ def checkForMail():
         #printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN",str(op))
         return "Success"
     except Exception,err:
-        printhen_response(data["username"],from_addr,"[no-reply] PRINTHEN EXCEPTION",traceback.print_exc())    
+        printhen_response(data["username"],from_addr,"[no-reply] PRINTHEN EXCEPTION","An Unknown exception occured kindly contact Admin at " + admin_email); 
+        printhen_response(data["username"],admin_mail,"[no-reply] PRINTHEN ADMIN-EXCEPTION",traceback.print_exc())    
 def updatePrintHistory(from_addr):
     print "updating Print History"
     try:
