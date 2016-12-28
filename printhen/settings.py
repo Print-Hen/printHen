@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'printhen',
     'redisboard',
     'gunicorn',
+    'corsheaders',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -51,7 +52,13 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 )
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+
 
 MAIL_USERNAME = 'printhen77@gmail.com'
 MAIL_PASSWORD = 'Parvathi12#'
