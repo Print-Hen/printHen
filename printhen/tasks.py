@@ -33,11 +33,12 @@ prev_time_offline = datetime.datetime.now()
 current_time_media_jam = datetime.datetime.now()
 elapsed_time_media_jam = 0
 prev_time_media_jam = datetime.datetime.now()
-
+from_addr = ""
 
 @shared_task
 @periodic_task(run_every=datetime.timedelta(seconds=10))
 def checkForMail():
+    global from_addr;
     try:
         with open('/home/pi/printhen/credentials.json') as data_file:
             data = json.load(data_file)
@@ -50,9 +51,9 @@ def checkForMail():
     password = data["password"]
     admin_email = data["admin_email"]
     mailbox = "inbox"
+    from_addr = ""
     try:     
         imapper = easyimap.connect(host, user, password, mailbox)
-        from_addr = ""
         op = {}
         options = {}
         mail1 = imapper.unseen(1)
