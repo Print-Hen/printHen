@@ -89,11 +89,11 @@ def checkForMail():
             #body = body[body.find("begin print")+11:body.find("end print")]
         
             if not mail.attachments:
-                printhen_response(data["username"], from_addr, "[no-reply]PRINTHEN-NO ATTACHMENT FOUND", "Hey Buddy, I guess you forgot to attach a document for printing")
+                printhen_response(data["username"], from_addr, "PrintHen - No attachment found.", "Hello, guess you did not attached any files to print")
                 return
             op = parseBody(body)
             if('copies' not in op):
-                printhen_response(data["username"],from_addr,"[no-reply] WIT EXCEPTION",op)
+                printhen_response(data["username"],from_addr,"PrintHen - Email processing exception.","Hello printHen did not understand your email, can you write it a little differently!")
             conn = cups.Connection()
             print body
             print op
@@ -111,7 +111,7 @@ def checkForMail():
             
                     
             if int(options['from']) > int(options['to']):
-                printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-START PAGE GREATER THAN END PAGE", "hey buddy it seems like the from value is greater that to value kindly check it")
+                printhen_response(data["username"], from_addr, "PrintHen - Error with print requirment.", "Your start-page value seems to be greater then the end page value.")
                 return
             for attachment in mail.attachments:
                 filename = settings.MEDIA_PATH + attachment[0]
@@ -154,8 +154,8 @@ def checkForMail():
                     except cups.IPPError as (status, description):
                         print 'IPP status is %d' % status
                         print 'Meaning:', description
-                        printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN ERROR - " +str(status) ,description)
-                        printhen_response(data["username"], admin_email, "PRINTHEN ADMIN-ERROR-"+str(status) + " " +str(from_addr), description)
+                        printhen_response(data["username"], from_addr, "PrintHen - Printer seems to be down.","Hello, there seems to be a problem with the printer, please check the printer and try again")
+                        printhen_response(data["username"], admin_email, "Printhen - Exception while printing - error "+str(status) + " while printing for " +str(from_addr), description)
                         return
                     job_state = conn.getJobAttributes(printer_returns)["job-state"]
                     #job_state = 9
@@ -167,28 +167,30 @@ def checkForMail():
                             printer_state = conn.getPrinterAttributes("printhen",requested_attributes=["printer-state-reasons",])
                             #print printer_state
                         if(job_state == 8):
-                            printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN PRINT ABORT" ,"PRINT ABORTED FOR UNKNOWN REASON")
+                            printhen_response(data["username"], from_addr, "PrintHen - Print job is aborted." ,"Hello, there seems to be a problem with the printer, please check the printer and try again   ")
                             return
                         if(job_state == 7):
-                            printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN PRINT CANCELLED" ,"PRINT CANCELLED BY ADMIN")
+                            printhen_response(data["username"], from_addr, "Printhen - Print job cancelled by admin" ,"Hello, your print job has been cancelled by the admin. kindly contact admin at " + str(admin_email))
                             return
                         for state in printer_state['printer-state-reasons']:
                             if("offline-report" in state):
-                                printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN-PRINTER OFFLINE" ,"PRINTER IS OFFLINE KINDLY CONTACT ADMIN")
-                                printhen_response(data["username"], admin_email, "PRINTHEN ADMIN-PRINTER OFFLINE" ,"PRINTER IS OFFLINE KINDLY Check it")
+                                printhen_response(data["username"], from_addr, "PrintHen-Printer seems to be down ." ,"Hello, there seems to be a problem with the printer, please check the printer and try again")
+
+")
+                                printhen_response(data["username"], admin_email, "PrintHen Admin - Printer is offline." ,"The Printer went offline, kindly check its condition and reboot printHen if necessary.")
                                 
                                 conn.cancelJob(printer_returns, purge_job=True)
                                 return
                     updatePrintHistory(from_addr)
                     print "SUCCESS"
 
-            printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN PRINT SUCCESS","Your Print has been successfully done.")
+            printhen_response(data["username"], from_addr, "Printhen - Your print job is complete.","Your print has been successfully done.")
                         
         #printhen_response(data["username"], from_addr, "[no-reply] PRINTHEN",str(op))
         return "Success"
     except Exception,err:
-        printhen_response(data["username"],from_addr,"[no-reply] PRINTHEN EXCEPTION","An Unknown exception occured kindly contact Admin at " + admin_email); 
-        printhen_response(data["username"],admin_mail,"[no-reply] PRINTHEN ADMIN-EXCEPTION",traceback.print_exc())    
+        printhen_response(data["username"],from_addr,"PrintHen - Unknown exception report.","An unknown exception occurred kindly contact your  admin at " + admin_email); 
+        printhen_response(data["username"],admin_mail,"PrintHen - send trace to our developers.","kindly send the file /var/log/supervisorctl/celeryd_err.log to developer raghuram8892@gmail.com" )    
 def updatePrintHistory(from_addr):
     print "updating Print History"
     try:
