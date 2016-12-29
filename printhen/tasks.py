@@ -89,7 +89,7 @@ def checkForMail():
             #body = body[body.find("begin print")+11:body.find("end print")]
         
             if not mail.attachments:
-                printhen_response(data["username"], from_addr, "PrintHen - No attachment found.", "Hello, guess you did not attached any files to print")
+                printhen_response(data["username"], from_addr, "PrintHen - No attachment found.", "Hello, guess you did not attached any files to print.")
                 return
             op = parseBody(body)
             if('copies' not in op):
@@ -175,8 +175,6 @@ def checkForMail():
                         for state in printer_state['printer-state-reasons']:
                             if("offline-report" in state):
                                 printhen_response(data["username"], from_addr, "PrintHen-Printer seems to be down ." ,"Hello, there seems to be a problem with the printer, please check the printer and try again")
-
-")
                                 printhen_response(data["username"], admin_email, "PrintHen Admin - Printer is offline." ,"The Printer went offline, kindly check its condition and reboot printHen if necessary.")
                                 
                                 conn.cancelJob(printer_returns, purge_job=True)

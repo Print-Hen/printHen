@@ -1,6 +1,7 @@
-
+import re
 
 def bake_email_template(email_addr,msg):
+    email_addr = re.sub(r'\@\w*(\.\w*)*','',email_addr)
     html = """
     <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -123,7 +124,7 @@ def bake_email_template(email_addr,msg):
     }
     </style>
     <!-- MESSAGE SUBJECT -->
-    <title>GetGrub Verify Email</title>
+    <title>PrintHen</title>
 </head>
 <!-- BODY -->
 <!-- Set message background color (twice) and text color (twice) -->
@@ -175,13 +176,11 @@ def bake_email_template(email_addr,msg):
                             color: #000000;
                         font-size: 10px; margin: 13; float:right; padding: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; border: none; display: block;" /></a>
                         
-                            <span style="font-size:1.5em"><b color="#FFFFFF">Dear """+ name """, </b></span>
+                            <span style="font-size:1.5em"color="#FFFFFF">Dear """+ email_addr  + """, </span>
                             <br>
                             
-                            <br> <b> Greetings from Printhen</b> 
-                            <br>
-                            <br> """ + msg
-                            """
+                            <br>  Greetings from PrintHen, 
+                            <br> <span color="#FFFFFF">""" + msg + """ </span>
                             <br>
                             <br>
                             <br>
@@ -189,7 +188,7 @@ def bake_email_template(email_addr,msg):
                                 <tr>
                                     <td align="center" width="300" height="40" bgcolor="#009587" style="-webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; color: #ffffff; display: block;">
                                         <a href="http://printhen.com" style="color:#000000;text-decoration:none;outline-style:none" target="_blank">
-                                            <span style="background-color:#FFC006;padding-top:15px;padding-bottom:15px;padding-right:30px;padding-left:30px;border-radius:7px">Visit Printhen</span>
+                                            <span style="background-color:#FFC006;padding-top:15px;padding-bottom:15px;padding-right:30px;padding-left:30px;border-radius:7px">Visit PrintHen</span>
                                         </a>
                                     </td>
                                 </tr>
@@ -202,7 +201,7 @@ def bake_email_template(email_addr,msg):
                                 </center>
                             </font> -->
                             <br> <b>Regards,
-                            <br> Printhen Team</b>
+                            <br> PrintHen Team</b>
                         </td>
                     </tr>
                     <tr>
