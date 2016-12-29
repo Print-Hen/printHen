@@ -214,9 +214,9 @@ def printhen_response(from_addr, to_addr, subject, msg):
     msg1['Subject'] = subject
     msg1['From'] = from_addr
     msg1['To'] = to_addr
-    html = bake_email_template(to_addr,msg)
+    html = utils.bake_email_template(to_addr,msg)
     part = MIMEText(html, 'html')
-    msg1.attach(part1)
+    msg1.attach(part)
     try:
         with open('credentials.json') as data_file:
             data = json.load(data_file)
