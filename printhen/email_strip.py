@@ -1,7 +1,7 @@
 import re
 
 def strip_mail(body):
-    #body = re.sub(r'([0-9])\-([0-9])'," to ",(body))
+    body = re.sub(r'(?i)(?<=[0-9])-(?=[0-9])'," to ",(body))
     body = re.sub(r'forwarded message','',body,flags=re.IGNORECASE)
     body = re.sub(r'date?.\:.*\n','',body,flags=re.IGNORECASE)
     body = re.sub(r'subject?.\:.*\n','',body,flags=re.IGNORECASE)
@@ -29,7 +29,7 @@ Date : Fri, 23 Dec 2016 00:45:10 +0530
 Subject : hello
 ============ Forwarded message ============
 
-print me one copy from 3-4
+print me one copy from 133-5642222
 
 
 
