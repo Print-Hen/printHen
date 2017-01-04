@@ -302,4 +302,13 @@ def printer_maintenance():
                                 if(elapsed_time_media_jam > 10):
                                     #printhen_response("printhen77@gmail.com", "raghuram8892@gmail.com", "[no-reply] PRINTHEN-Media Jam" ,"MEDIA JAMMED")
                                     elapsed_time_media_jam = 0
-    
+   
+
+#@shared_task
+#@periodic_task(run_every=datetime.timedelta(seconds=10))
+def clean_up_table(self):
+    print "Cleaning up Database"
+    try:
+        PrintHistory.objects.all().delete()
+    except:
+        print "Exception Happened while deleting table" 
