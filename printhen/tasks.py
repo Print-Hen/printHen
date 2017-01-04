@@ -188,7 +188,7 @@ def checkForMail():
         return "Success"
     except Exception,err:
         printhen_response(data["username"],from_addr,"PrintHen - Unknown exception report.","An unknown exception occurred kindly contact your  admin at " + admin_email); 
-        printhen_response(data["username"],admin_mail,"PrintHen - send trace to our developers.","kindly send the file /var/log/supervisorctl/celeryd_err.log to developer raghuram8892@gmail.com" )    
+        printhen_response(data["username"],admin_email,"PrintHen - send trace to our developers.","kindly send the file /var/log/supervisorctl/celeryd_err.log to developer raghuram8892@gmail.com" )    
 def updatePrintHistory(from_addr):
     print "updating Print History"
     try:

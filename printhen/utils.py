@@ -178,7 +178,8 @@ def bake_email_template(email_addr,msg):
                         
                             <span style="font-size:1.5em"color="#FFFFFF">Dear """+ email_addr  + """, </span>
                             <br>
-                            
+                           <br>
+                           <br> 
                             <br>  Greetings from PrintHen, 
                             <br> <span color="#FFFFFF">""" + msg + """ </span>
                             <br>
