@@ -17,10 +17,10 @@ PrintHen solves this problem. The system admin(or any guy with basic knowledge l
 * [Software](https://github.com/Print-Hen/printHen/wiki/software)
 * [Setup](https://github.com/Print-Hen/printHen/wiki/setup)
 * [Examples](https://github.com/Print-Hen/printHen/wiki/examples)
-* [Contributions](contributions)
-* [Technical Specifications](tech)
-* [Security] (security)
-* [Creating your own Stack](stack)
+* [Contributions](https://github.com/Print-Hen/printHen/wiki/contributions)
+* [Technical Specifications](https://github.com/Print-Hen/printHen/wiki/tech)
+* [Security](https://github.com/Print-Hen/printHen/wiki/security)
+* [Creating your own Stack](https://github.com/Print-Hen/printHen/wiki/stack)
 
 
  
