@@ -13,10 +13,10 @@ PrintHen is targeted towards startups that use shared office spaces. Just assume
 
 PrintHen solves this problem. The system admin(or any guy with basic knowledge like accessing a webpage) needs to setup printHen once and then any number of users may send mail to a specified email ID(configured beforehand), in natural language, and printHen will print it for you. You dont even need to be in the network or even in the premises where the printer is located. You can just mail it from your home and then take the printouts when u find time to access the printer.
 
-* [Hardware](hardware)
-* [Software](software)
-* [Setup](setup)
-* [Examples](examples)
+* [Hardware](https://github.com/Print-Hen/printHen/wiki/hardware)
+* [Software](https://github.com/Print-Hen/printHen/wiki/software)
+* [Setup](https://github.com/Print-Hen/printHen/wiki/setup)
+* [Examples](https://github.com/Print-Hen/printHen/wiki/examples)
 * [Contributions](contributions)
 * [Technical Specifications](tech)
 * [Security] (security)
